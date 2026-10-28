@@ -1,0 +1,29 @@
+{
+  "schema_version": "2.0.0",
+  "name": "youtube-agent-skill-suite",
+  "version": "2.0.0",
+  "description": "Zero-cost, deterministic YouTube retention engineering, script scoring, packaging, and automated editing suite for AI agents.",
+  "author": "Principal AI Architecture Team",
+  "license": "MIT",
+  "runtime": {
+    "python": ">=3.10",
+    "node": ">=18.0.0",
+    "zero_cost_local": true
+  },
+  "skills": [
+    { "id": "yt-audit", "path": "skills/yt-audit/SKILL.md" },
+    { "id": "yt-plan", "path": "skills/yt-plan/SKILL.md" },
+    { "id": "yt-script", "path": "skills/yt-script/SKILL.md", "executable": "skills/yt-script/hookscore.py" },
+    { "id": "yt-retention", "path": "skills/yt-retention/SKILL.md", "executable": "skills/yt-retention/retention.py" },
+    { "id": "yt-edit", "path": "skills/yt-edit/SKILL.md", "executable": "skills/yt-edit/deadair.py" },
+    { "id": "yt-chapters", "path": "skills/yt-chapters/SKILL.md", "executable": "skills/yt-chapters/chapters.py" },
+    { "id": "yt-package", "path": "skills/yt-package/SKILL.md", "executable": "skills/yt-package/title.py" },
+    { "id": "yt-seo", "path": "skills/yt-seo/SKILL.md" },
+    { "id": "yt-shorts", "path": "skills/yt-shorts/SKILL.md" },
+    { "id": "yt-viral", "path": "skills/yt-viral/SKILL.md", "executable": "skills/yt-viral/swipe.py" },
+    { "id": "yt-comment", "path": "skills/yt-comment/SKILL.md" }
+  ],
+  "templates": {
+    "voice_profile": "templates/voice.md"
+  }
+}

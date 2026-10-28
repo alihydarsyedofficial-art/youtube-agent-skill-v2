@@ -1,0 +1,32 @@
+{
+  "identifier": "youtube-agent-skill-v2",
+  "display_name": "YouTube Retention & Growth Engine v2.0",
+  "category": "Media & Content Automation",
+  "tags": ["youtube", "retention", "seo", "scriptwriting", "video-editing", "serverless"],
+  "pricing": "free",
+  "capabilities": {
+    "deterministic_scoring": true,
+    "offline_execution": true,
+    "json_rpc_compatible": true,
+    "ffmpeg_edl_generation": true
+  },
+  "pipelines": {
+    "full_production": [
+      "yt-viral",
+      "yt-plan",
+      "yt-package",
+      "yt-script",
+      "yt-retention",
+      "yt-edit",
+      "yt-chapters",
+      "yt-seo",
+      "yt-comment"
+    ],
+    "shorts_factory": [
+      "yt-viral",
+      "yt-shorts",
+      "yt-edit",
+      "yt-comment"
+    ]
+  }
+}

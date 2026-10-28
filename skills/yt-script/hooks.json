@@ -1,0 +1,67 @@
+{
+  "version": "2.0.0",
+  "archetypes": {
+    "curiosity_gap": {
+      "weight": 1.25,
+      "patterns": [
+        "what nobody tells you about",
+        "the hidden reason",
+        "why 99% of",
+        "i tested every",
+        "before you buy",
+        "the dark truth",
+        "what happens when",
+        "secretly"
+      ]
+    },
+    "contrarian_interrupt": {
+      "weight": 1.30,
+      "patterns": [
+        "stop doing",
+        "is a lie",
+        "everything you know about",
+        "do not use",
+        "why i quit",
+        "the biggest mistake",
+        "never do this",
+        "forget about"
+      ]
+    },
+    "velocity_proof": {
+      "weight": 1.20,
+      "patterns": [
+        "in 60 seconds",
+        "in 5 minutes",
+        "from zero to",
+        "i spent",
+        "i built",
+        "step-by-step",
+        "exact blueprint",
+        "without paying"
+      ]
+    },
+    "stakes_loss_aversion": {
+      "weight": 1.15,
+      "patterns": [
+        "cost me",
+        "ruined",
+        "before it's too late",
+        "warning",
+        "lose everything",
+        "destroying your",
+        "at risk",
+        "wasting"
+      ]
+    }
+  },
+  "visual_markers": ["[VISUAL:", "[B-ROLL:", "[SFX:", "[TEXT:", "[CUT:", "[ZOOM:"],
+  "friction_penalties": [
+    "hey guys",
+    "welcome back to my channel",
+    "in today's video we are going to",
+    "don't forget to like and subscribe",
+    "before we get started",
+    "sorry for not uploading",
+    "without further ado"
+  ]
+}

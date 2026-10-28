@@ -1,0 +1,14 @@
+﻿{
+  "name": "youtube-agent-skill-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Zero-Cost YouTube Agent Skill & Automation Framework",
+  "scripts": {
+    "test:title": "python skills/yt-package/title.py --title \"How I Automated My Workflow in 10 Minutes\" --thumb \"100% FREE\"",
+    "test:hook": "python skills/yt-script/hookscore.py --text \"You are wasting hours on tasks a 10-line script can do in 5 seconds. [VISUAL: Timer screen] Here is why 99% of setups fail.\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}
