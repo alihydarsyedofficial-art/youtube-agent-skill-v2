@@ -1,29 +1,13 @@
-import { execFile } from "child_process";
-import { promisify } from "util";
+﻿import type { IncomingMessage, ServerResponse } from "http";
+import { spawn } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
 
-const execFileAsync = promisify(execFile);
-
-export type SkillTool =
-  | "hookscore"
-  | "retention"
-  | "deadair"
-  | "chapters"
-  | "title"
-  | "swipe";
+export type SkillTool = "hookscore" | "retention" | "deadair" | "chapters" | "title" | "swipe";
 
 export interface AgentToolRequest {
   tool: SkillTool;
-  payload: Record<string, unknown>;
-}
-
-export interface AgentToolResponse {
-  status: "success" | "error";
-  tool: SkillTool;
-  execution_ms: number;
-  data?: unknown;
-  error?: string;
+  payload: Record<string, any>;
 }
 
 const TOOL_MAP: Record<SkillTool, string> = {
@@ -35,74 +19,99 @@ const TOOL_MAP: Record<SkillTool, string> = {
   swipe: "skills/yt-viral/swipe.py",
 };
 
-/**
- * Executes a Python skill script deterministically via stdin JSON piping.
- * Zero temporary file overhead, serverless-safe, and injection-proof.
- */
-export async function executeSkillTool(req: AgentToolRequest): Promise<AgentToolResponse> {
-  const startTime = Date.now();
-  const relativeScriptPath = TOOL_MAP[req.tool];
-
-  if (!relativeScriptPath) {
-    return {
-      status: "error",
-      tool: req.tool,
-      execution_ms: Date.now() - startTime,
-      error: `Unknown tool '${req.tool}'. Valid tools: ${Object.keys(TOOL_MAP).join(", ")}`,
-    };
+function validatePayload(tool: SkillTool, payload: Record<string, any>): string | null {
+  if (!payload || typeof payload !== "object") return "Request 'payload' must be a JSON object.";
+  if (tool === "title") {
+    if (Array.isArray(payload.candidates) && payload.candidates.length > 0) return null;
+    if (typeof payload.title === "string" && payload.title.trim()) return null;
+    return "Tool 'title' requires 'payload.title' or 'payload.candidates'.";
   }
-
-  const scriptFullPath = path.resolve(process.cwd(), relativeScriptPath);
-  if (!fs.existsSync(scriptFullPath)) {
-    return {
-      status: "error",
-      tool: req.tool,
-      execution_ms: Date.now() - startTime,
-      error: `Script binary not found at path: ${scriptFullPath}`,
-    };
+  if (typeof payload.text !== "string" || !payload.text.trim()) {
+    return `Tool '${tool}' requires a non-empty 'payload.text' string.`;
   }
+  return null;
+}
 
-  try {
-    const inputJson = JSON.stringify(req.payload);
-    const promise = execFileAsync("python3", [scriptFullPath, "--json-stdin"], {
-      timeout: 15000,
-      maxBuffer: 1024 * 1024 * 5,
-    });
-
-    const child = promise.child;
-    if (child.stdin) {
-      child.stdin.write(inputJson);
+function runPythonSubprocess(scriptPath: string, payload: Record<string, any>): Promise<any> {
+  const binaries = process.platform === "win32" ? ["python", "py", "python3"] : ["python3", "python"];
+  const tryBinary = (idx: number): Promise<any> => {
+    if (idx >= binaries.length) return Promise.reject(new Error("No Python binary found."));
+    return new Promise((resolve, reject) => {
+      const child = spawn(binaries[idx], [scriptPath, "--json-stdin"], { stdio: ["pipe", "pipe", "pipe"], timeout: 12000 });
+      let stdout = "";
+      let stderr = "";
+      child.stdout.on("data", (c) => (stdout += c.toString()));
+      child.stderr.on("data", (c) => (stderr += c.toString()));
+      child.on("error", () => tryBinary(idx + 1).then(resolve).catch(reject));
+      child.on("close", (code) => {
+        if (code !== 0) return reject(new Error(stderr.trim() || `Exited with ${code}`));
+        try { resolve(JSON.parse(stdout.trim())); } catch { reject(new Error("Invalid JSON output")); }
+      });
+      child.stdin.write(JSON.stringify(payload));
       child.stdin.end();
-    }
+    });
+  };
+  return tryBinary(0);
+}
 
-    const { stdout } = await promise;
-    const parsedData = JSON.parse(stdout.trim());
+export async function executeSkillTool(req: AgentToolRequest) {
+  const startTime = Date.now();
+  const tool = req?.tool;
+  const relPath = TOOL_MAP[tool];
+  if (!relPath) {
+    return { status: "error", execution_ms: Date.now() - startTime, error: `Valid tools: ${Object.keys(TOOL_MAP).join(", ")}` };
+  }
+  const err = validatePayload(tool, req.payload);
+  if (err) return { status: "error", tool, execution_ms: Date.now() - startTime, error: err };
 
-    return {
-      status: "success",
-      tool: req.tool,
-      execution_ms: Date.now() - startTime,
-      data: parsedData,
-    };
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    return {
-      status: "error",
-      tool: req.tool,
-      execution_ms: Date.now() - startTime,
-      error: message,
-    };
+  const fullPath = path.resolve(process.cwd(), relPath);
+  try {
+    const data = await runPythonSubprocess(fullPath, req.payload);
+    return { status: "success", tool, runtime_engine: "python-cli", execution_ms: Date.now() - startTime, data };
+  } catch (e: any) {
+    return { status: "error", tool, execution_ms: Date.now() - startTime, error: e?.message || String(e) };
   }
 }
 
-/**
- * Serverless HTTP Handler (Vercel / AWS Lambda / Cloudflare Node compat)
- */
-export default async function handler(req: any, res: any) {
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method Not Allowed. Use POST." });
-    return;
+export default async function handler(req: IncomingMessage & { body?: any }, res: ServerResponse) {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  const send = (code: number, obj: unknown) => {
+    res.statusCode = code;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.end(JSON.stringify(obj, null, 2));
+  };
+
+  if (req.method === "OPTIONS") return send(200, { ok: true });
+  const url = req.url || "/";
+
+  if (req.method === "GET" && (url.includes("/health") || url === "/api" || url === "/api/")) {
+    return send(200, { status: "healthy", version: "2.1.0", available_tools: Object.keys(TOOL_MAP) });
   }
-  const result = await executeSkillTool(req.body as AgentToolRequest);
-  res.status(result.status === "success" ? 200 : 400).json(result);
+
+  if (req.method === "GET" && url.includes("/skills")) {
+    const p = path.resolve(process.cwd(), ".claude-plugin/plugin.json");
+    const manifest = fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, "utf-8")) : {};
+    return send(200, { status: "success", manifest });
+  }
+
+  if (req.method !== "POST") return send(405, { status: "error", error: "Use GET /api/health or POST /api/execute" });
+
+  let raw = "";
+  if (req.body && typeof req.body === "object") {
+    const out = await executeSkillTool(req.body);
+    return send(out.status === "success" ? 200 : 400, out);
+  }
+  req.on("data", (c) => (raw += c.toString()));
+  req.on("end", async () => {
+    try {
+      const parsed = JSON.parse(raw || "{}");
+      const out = await executeSkillTool(parsed);
+      send(out.status === "success" ? 200 : 400, out);
+    } catch (e: any) {
+      send(400, { status: "error", error: e?.message || "Invalid JSON body" });
+    }
+  });
 }
