@@ -1,14 +1,23 @@
 ﻿{
   "name": "youtube-agent-skill-v2",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "Zero-Cost YouTube Agent Skill & Automation Framework",
+  "description": "Production Serverless YouTube Retention, Packaging, Editing & SEO Automation Suite",
+  "main": "api/index.ts",
   "scripts": {
-    "test:title": "python skills/yt-package/title.py --title \"How I Automated My Workflow in 10 Minutes\" --thumb \"100% FREE\"",
-    "test:hook": "python skills/yt-script/hookscore.py --text \"You are wasting hours on tasks a 10-line script can do in 5 seconds. [VISUAL: Timer screen] Here is why 99% of setups fail.\""
+    "build": "tsc --noEmit",
+    "test:title": "python skills/yt-package/title.py --title \"How I Automated My Channel in 10 Minutes\" --thumb \"100% FREE SETUP\"",
+    "test:hook": "python skills/yt-script/hookscore.py --text \"You are wasting hours on manual tasks. [VISUAL: Split terminal] I tested 12 tools, and 99% fail this basic check. But what happens when you run it locally?\"",
+    "test:swipe": "python skills/yt-viral/swipe.py --title \"I Built a 10K App in 24 Hours\" --text \"Everyone says building software takes months. They are wrong. I locked myself in a room for 24 hours. Wait until you see what broke at hour 18.\""
+  },
+  "dependencies": {
+    "@vercel/node": "^3.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.4.0"
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

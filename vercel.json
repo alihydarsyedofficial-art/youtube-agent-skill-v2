@@ -1,9 +1,13 @@
 ﻿{
   "version": 2,
-  "builds": [
-    { "src": "api/index.ts", "use": "@vercel/node" }
-  ],
-  "routes": [
-    { "src": "/api/execute", "dest": "/api/index.ts" }
+  "functions": {
+    "api/index.ts": {
+      "memory": 1024,
+      "maxDuration": 15,
+      "includeFiles": "skills/**"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.ts" }
   ]
 }
