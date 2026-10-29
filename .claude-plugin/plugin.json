@@ -1,18 +1,19 @@
 {
-  "schema_version": "2.1.0",
-  "name": "youtube-agent-skill-suite",
-  "version": "2.1.0",
-  "description": "End-to-end YouTube growth, retention engineering, script scoring, packaging, and SEO automation suite for AI agents.",
-  "author": "Arifull Islam",
+  "schema_version": "2.3.0",
+  "name": "youtube-agent-autonomous-suite",
+  "version": "2.3.0",
+  "description": "Autonomous USA Kids/Cartoon Channel Scaling & Anti-Detection Automation Suite for AI Agents.",
+  "author": "Arifull Islam (TRICK A4IF)",
   "license": "MIT",
   "runtime": {
     "python": ">=3.10",
     "node": ">=18.0.0",
     "serverless_entry": "api/index.ts",
-    "zero_cost_local": true
+    "zero_cost_local": true,
+    "anti_detection_protection": true
   },
   "skills": [
-    { "id": "yt-audit", "path": "skills/yt-audit/SKILL.md" },
+    { "id": "yt-audit", "path": "skills/yt-audit/SKILL.md", "executable": "api/index.ts" },
     { "id": "yt-plan", "path": "skills/yt-plan/SKILL.md" },
     { "id": "yt-script", "path": "skills/yt-script/SKILL.md", "executable": "skills/yt-script/hookscore.py" },
     { "id": "yt-retention", "path": "skills/yt-retention/SKILL.md", "executable": "skills/yt-retention/retention.py" },
