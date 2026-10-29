@@ -81,12 +81,7 @@ function countSyllablesTS(word: string): number {
   return Math.max(1, matches ? matches.length : 1);
 }
 
-/**
- * 100% Real Algorithmic TypeScript Engine (Zero hardcoded/dummy values)
- * Mirrors the exact mathematical and regex logic of all 6 Python engines for Vercel Serverless execution.
- */
 function executeRealTypeScriptEngine(tool: SkillTool, payload: Record<string, any>): any {
-  // 1. TITLE & THUMBNAIL SYNERGY ENGINE
   if (tool === "title") {
     const scoreSingleTitle = (titleRaw: string, thumbRaw: string = "") => {
       const title = titleRaw.trim();
@@ -185,7 +180,6 @@ function executeRealTypeScriptEngine(tool: SkillTool, payload: Record<string, an
     return scoreSingleTitle(String(payload.title || ""), String(payload.thumb || ""));
   }
 
-  // 2. 6-AXIS HOOK SCORER ENGINE
   if (tool === "hookscore") {
     const text = String(payload.text || "");
     const targetWpm = Number(payload.wpm || 155);
@@ -289,7 +283,6 @@ function executeRealTypeScriptEngine(tool: SkillTool, payload: Record<string, an
     };
   }
 
-  // 3. RETENTION CURVE SIMULATOR ENGINE
   if (tool === "retention") {
     const scriptText = String(payload.text || "").trim();
     const wpm = Number(payload.wpm || 150);
@@ -368,7 +361,6 @@ function executeRealTypeScriptEngine(tool: SkillTool, payload: Record<string, an
     };
   }
 
-  // 4. DEAD-AIR & FFMPEG CUTTER ENGINE
   if (tool === "deadair") {
     const raw = String(payload.text || "").trim();
     const maxGap = Number(payload.max_gap || 0.45);
@@ -440,7 +432,6 @@ function executeRealTypeScriptEngine(tool: SkillTool, payload: Record<string, an
     };
   }
 
-  // 5. CHAPTERS GENERATOR ENGINE
   if (tool === "chapters") {
     const raw = String(payload.text || "").trim();
     const minGap = Number(payload.min_gap || 45);
@@ -478,7 +469,6 @@ function executeRealTypeScriptEngine(tool: SkillTool, payload: Record<string, an
     };
   }
 
-  // 6. VIRAL SWIPE DECONSTRUCTOR ENGINE
   if (tool === "swipe") {
     const title = String(payload.title || "Untitled Outlier");
     const transcript = String(payload.text || "").replace(/\[.*?\]/g, " ").trim();
@@ -559,7 +549,7 @@ export async function executeSkillTool(req: AgentToolRequest): Promise<AgentTool
       };
     }
   } catch {
-    // When running on Vercel Serverless (where Python binary is absent), execute the real TS engine
+    // Fallback to real TS engine on cloud serverless
   }
 
   const realTsData = executeRealTypeScriptEngine(tool, req.payload);
