@@ -1,0 +1,59 @@
+{
+  "niches": {
+    "kids_cartoons": {
+      "cpc_tier": "Medium",
+      "rpm_range": "$2.50 - $5.00",
+      "target_audience": "USA Kids & Parents",
+      "safety_rules": "Strict adherence to COPPA, positive moral stories, vibrant pacing.",
+      "sub_topics": [
+        "Bedtime moral stories for toddlers",
+        "Interactive shape and color learning adventures",
+        "Friendly animal rescue missions in 3D"
+      ]
+    },
+    "personal_finance": {
+      "cpc_tier": "Very High",
+      "rpm_range": "$15.00 - $35.00",
+      "target_audience": "USA & Tier-1 Adults (18-45)",
+      "safety_rules": "Disclaimer included, value-driven educational content.",
+      "sub_topics": [
+        "Passive income blueprints using digital assets",
+        "Smart budgeting habits for high inflation eras",
+        "Credit score optimization secrets for 2026"
+      ]
+    },
+    "crypto_web3": {
+      "cpc_tier": "High",
+      "rpm_range": "$10.00 - $25.00",
+      "target_audience": "Global Tech Investors",
+      "safety_rules": "Educational focus, no direct financial guarantees.",
+      "sub_topics": [
+        "Layer 2 scaling solutions explained simply",
+        "DeFi security best practices to avoid scams",
+        "Future of decentralized applications in 2026"
+      ]
+    },
+    "ai_technology": {
+      "cpc_tier": "High",
+      "rpm_range": "$8.00 - $18.00",
+      "target_audience": "Tech Enthusiasts & Professionals",
+      "safety_rules": "Accurate tool reviews, practical workflows.",
+      "sub_topics": [
+        "Mastering autonomous AI agent workflows",
+        "Top open-source productivity models compared",
+        "Automating daily business tasks with local LLMs"
+      ]
+    },
+    "luxury_real_estate": {
+      "cpc_tier": "Extreme",
+      "rpm_range": "$20.00 - $40.00",
+      "target_audience": "High-Net-Worth Individuals (USA)",
+      "safety_rules": "Aspirational, visual-heavy, premium storytelling.",
+      "sub_topics": [
+        "Inside a $50M futuristic mansion in Beverly Hills",
+        "Eco-friendly architectural marvels of modern cities",
+        "How billionaires design private island retreats"
+      ]
+    }
+  }
+}
