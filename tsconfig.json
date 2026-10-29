@@ -1,18 +1,17 @@
 ﻿{
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
-    "moduleResolution": "node",
-    "ignoreDeprecations": "6.0",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "rootDir": "./api",
+    "rootDir": ".",
     "outDir": "./dist"
   },
-  "include": ["api/**/*.ts"],
+  "include": ["api/**/*", "skills/**/*"],
   "exclude": ["node_modules", ".vercel"]
 }
