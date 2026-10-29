@@ -1,13 +1,14 @@
 {
-  "schema_version": "2.0.0",
+  "schema_version": "2.1.0",
   "name": "youtube-agent-skill-suite",
-  "version": "2.0.0",
-  "description": "Zero-cost, deterministic YouTube retention engineering, script scoring, packaging, and automated editing suite for AI agents.",
-  "author": "Principal AI Architecture Team",
+  "version": "2.1.0",
+  "description": "End-to-end YouTube growth, retention engineering, script scoring, packaging, and SEO automation suite for AI agents.",
+  "author": "Arifull Islam",
   "license": "MIT",
   "runtime": {
     "python": ">=3.10",
     "node": ">=18.0.0",
+    "serverless_entry": "api/index.ts",
     "zero_cost_local": true
   },
   "skills": [
