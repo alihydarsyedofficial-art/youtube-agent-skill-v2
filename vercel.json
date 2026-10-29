@@ -3,11 +3,10 @@
   "functions": {
     "api/index.ts": {
       "memory": 1024,
-      "maxDuration": 15,
-      "includeFiles": "skills/**"
+      "maxDuration": 15
     }
   },
-  "rewrites": [
+  "routes": [
     { "source": "/api/(.*)", "destination": "/api/index.ts" }
   ]
 }
