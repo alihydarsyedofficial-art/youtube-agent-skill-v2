@@ -1,7 +1,29 @@
-import type { IncomingMessage, ServerResponse } from "http";
-import { spawn } from "child_process";
-import * as path from "path";
-import * as fs from "fs";
+type BufferLike = { toString(): string };
+
+declare function require(moduleName: string): any;
+
+declare const process: {
+  platform: string;
+  cwd(): string;
+};
+
+const { spawn } = require("child_process");
+const path = require("path");
+const fs = require("fs");
+
+interface IncomingMessage {
+  method?: string;
+  url?: string;
+  body?: any;
+  on(event: "data", listener: (chunk: BufferLike) => void): this;
+  on(event: "end", listener: () => void): this;
+}
+
+interface ServerResponse {
+  statusCode: number;
+  setHeader(name: string, value: string): this;
+  end(data?: string): void;
+}
 
 export type SkillTool = "hookscore" | "retention" | "deadair" | "chapters" | "title" | "swipe" | "audit";
 
@@ -58,10 +80,10 @@ function runPythonSubprocess(scriptPath: string, payload: Record<string, any>): 
       });
       let stdout = "";
       let stderr = "";
-      child.stdout.on("data", (c) => (stdout += c.toString()));
-      child.stderr.on("data", (c) => (stderr += c.toString()));
+      child.stdout.on("data", (c: BufferLike) => (stdout += c.toString()));
+      child.stderr.on("data", (c: BufferLike) => (stderr += c.toString()));
       child.on("error", () => tryBinary(idx + 1).then(resolve).catch(reject));
-      child.on("close", (code) => {
+      child.on("close", (code: number | null) => {
         if (code !== 0) return reject(new Error(stderr.trim() || `Exited with ${code}`));
         try {
           resolve(JSON.parse(stdout.trim()));
