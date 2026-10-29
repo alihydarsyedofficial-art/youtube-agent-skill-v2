@@ -1,0 +1,24 @@
+name: YouTube Autonomous Agent Runner
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # প্রতিদিন বাংলাদেশ সময় সকাল বা নির্দিষ্ট সময়ে ব্যাকগ্রাউন্ডে রান হবে
+  workflow_dispatch: # তুমি চাইলে গিটহাব ড্যাশবোর্ড থেকেও ম্যানুয়ালি 'Run workflow' ক্লিক করে চালাতে পারবে
+
+jobs:
+  run-youtube-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Anti-Duplicate & Niche Script Test
+        run: |
+          python skills/yt-script/anti_duplicate.py kids_cartoons
+          python skills/yt-script/human_pacing.py "Welcome to our high-RPM automated channel."
+          echo "Autonomous background check completed successfully."
