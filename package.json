@@ -11,11 +11,11 @@
     "test:swipe": "python skills/yt-viral/swipe.py --title \"I Built a 10K App in 24 Hours\" --text \"Everyone says building software takes months. They are wrong. I locked myself in a room for 24 hours. Wait until you see what broke at hour 18.\""
   },
   "dependencies": {
-    "@vercel/node": "^3.2.0"
+    "@vercel/node": "^28.0.1"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
-    "typescript": "^5.5.0"
+    "@types/node": "^20.19.43",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=18.0.0"
