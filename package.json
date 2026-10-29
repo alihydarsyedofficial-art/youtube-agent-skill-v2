@@ -1,1 +1,23 @@
-{`n  "name": "youtube-agent-skill-v2",`n  "version": "2.1.0",`n  "private": true,`n  "description": "Production Serverless YouTube Retention, Packaging, Editing & SEO Automation Suite",`n  "main": "api/index.ts",`n  "scripts": {`n    "build": "tsc",`n    "test:title": "python skills/yt-package/title.py --title \"How I Automated My Channel in 10 Minutes\" --thumb \"100% FREE SETUP\"",`n    "test:hook": "python skills/yt-script/hookscore.py --text \"You are wasting hours on manual tasks. [VISUAL: Split terminal] I tested 12 tools, and 99% fail this basic check. But what happens when you run it locally?\"",`n    "test:swipe": "python skills/yt-viral/swipe.py --title \"I Built a 10K App in 24 Hours\" --text \"Everyone says building software takes months. They are wrong. I locked myself in a room for 24 hours. Wait until you see what broke at hour 18.\""`n  },`n  "dependencies": {`n    "@vercel/node": "^3.2.0"`n  },`n  "devDependencies": {`n    "@types/node": "^20.14.0",`n    "typescript": "^5.5.0"`n  },`n  "engines": {`n    "node": ">=18.0.0"`n  }`n}
+{
+  "name": "youtube-agent-skill-v2",
+  "version": "2.1.0",
+  "private": true,
+  "description": "Production Serverless YouTube Retention, Packaging, Editing & SEO Automation Suite",
+  "main": "api/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test:title": "python skills/yt-package/title.py --title \"How I Automated My Channel in 10 Minutes\" --thumb \"100% FREE SETUP\"",
+    "test:hook": "python skills/yt-script/hookscore.py --text \"You are wasting hours on manual tasks. [VISUAL: Split terminal] I tested 12 tools, and 99% fail this basic check. But what happens when you run it locally?\"",
+    "test:swipe": "python skills/yt-viral/swipe.py --title \"I Built a 10K App in 24 Hours\" --text \"Everyone says building software takes months. They are wrong. I locked myself in a room for 24 hours. Wait until you see what broke at hour 18.\""
+  },
+  "dependencies": {
+    "@vercel/node": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
