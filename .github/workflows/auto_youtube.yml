@@ -5,6 +5,9 @@ on:
     - cron: '0 3 * * *' # প্রতিদিন বাংলাদেশ সময় নির্দিষ্ট সময়ে ব্যাকগ্রাউন্ডে রান হবে
   workflow_dispatch: # গিটহাব ড্যাশবোর্ড থেকে ম্যানুয়ালি 'Run workflow' ক্লিক করে চালাতে পারবেন
 
+permissions:
+  contents: write
+
 jobs:
   run-youtube-agent:
     runs-on: ubuntu-latest
@@ -31,3 +34,12 @@ jobs:
           DRY_RUN: "0"
         run: |
           python main.py
+
+      - name: Commit queue and history changes
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Update upload history and queue"
+          git push
