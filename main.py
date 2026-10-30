@@ -174,7 +174,8 @@ def run() -> int:
 
     try:
         youtube = get_service()
-        verify_channel(youtube, require_env("YOUTUBE_CHANNEL_ID"))
+        # Channel ID directly hardcoded to avoid any environment variable issues
+        verify_channel(youtube, "UCaN934iC6nkbfDkG_X9TrRQ")
         video_id = upload_video(
             youtube,
             video,
