@@ -2,8 +2,8 @@ name: YouTube Autonomous Agent Runner
 
 on:
   schedule:
-    - cron: '0 3 * * *' # প্রতিদিন বাংলাদেশ সময় সকাল বা নির্দিষ্ট সময়ে ব্যাকগ্রাউন্ডে রান হবে
-  workflow_dispatch: # তুমি চাইলে গিটহাব ড্যাশবোর্ড থেকেও ম্যানুয়ালি 'Run workflow' ক্লিক করে চালাতে পারবে
+    - cron: '0 3 * * *' # প্রতিদিন বাংলাদেশ সময় নির্দিষ্ট সময়ে ব্যাকগ্রাউন্ডে রান হবে
+  workflow_dispatch: # গিটহাব ড্যাশবোর্ড থেকে ম্যানুয়ালি 'Run workflow' ক্লিক করে চালাতে পারবেন
 
 jobs:
   run-youtube-agent:
@@ -17,8 +17,17 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Run Anti-Duplicate & Niche Script Test
+      - name: Install Dependencies
         run: |
-          python skills/yt-script/anti_duplicate.py kids_cartoons
-          python skills/yt-script/human_pacing.py "Welcome to our high-RPM automated channel."
-          echo "Autonomous background check completed successfully."
+          python -m pip install --upgrade pip
+          pip install google-auth google-auth-oauthlib google-auth-httplib2 google-api-python-client requests
+
+      - name: Run YouTube Automation Script
+        env:
+          YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+          YOUTUBE_CHANNEL_ID: ${{ vars.YOUTUBE_CHANNEL_ID }}
+          DRY_RUN: "0"
+        run: |
+          python main.py
