@@ -8,22 +8,7 @@ What one run does:
   3. Uploads it with upload.py (OAuth refresh-token auth, channel check).
   4. Records the topic in upload_history.json (same format anti_duplicate.py
      reads) and moves the video to videos/uploaded/.
-
-This script does NOT produce video. A finished video file must already be in
-the queue folder. Optional sidecar: same name with .json, for example
-    bedtime_story_01.mp4
-    bedtime_story_01.json
-        {"title": "...", "description": "...", "tags": ["..."],
-         "topic": "Bedtime moral stories for toddlers", "thumbnail": "thumb.jpg"}
-
-Environment variables (secrets are read by upload.py):
-    NICHE_KEY          default: kids_cartoons
-    UPLOAD_PRIVACY     private (default) | unlisted | public
-    AI_DISCLOSURE      true (default) | false | omit
-    MADE_FOR_KIDS      true | false    (default: true for kids_cartoons, else false)
-    VIDEO_QUEUE_DIR    default: videos/queue
-    VIDEO_DONE_DIR     default: videos/uploaded
-    DRY_RUN            1 = show what would happen, upload nothing
+  5. Sends real-time execution status and updates via Telegram bot.
 
 Exit codes: 0 = uploaded or nothing to do, 1 = error that needs attention.
 """
@@ -34,6 +19,7 @@ import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+import requests
 
 from upload import (
     UploadError,
@@ -58,6 +44,18 @@ HASHTAGS = {
     "ai_technology": ["#AI", "#Automation", "#Productivity"],
     "luxury_real_estate": ["#LuxuryHomes", "#Architecture", "#RealEstate"],
 }
+
+
+def send_telegram_update(message):
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    if token and chat_id:
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        payload = {"chat_id": chat_id, "text": message}
+        try:
+            requests.post(url, json=payload)
+        except Exception as e:
+            print(f"Telegram notification failed: {e}")
 
 
 def load_json(path: Path, default):
@@ -129,13 +127,16 @@ def run() -> int:
     niches = load_json(NICHE_DB, {}).get("niches", {})
     niche_info = niches.get(niche_key)
     if not niche_info:
-        print(f"ERROR: niche '{niche_key}' not found in {NICHE_DB.name}", file=sys.stderr)
+        err_msg = f"ERROR: niche '{niche_key}' not found in {NICHE_DB.name}"
+        print(err_msg, file=sys.stderr)
+        send_telegram_update(f"⚠️ YouTube Agent Error:\n{err_msg}")
         return 1
 
     video = pick_next_video()
     if video is None:
-        print(f"No video in {QUEUE_DIR.relative_to(ROOT)}/ - nothing to upload today.")
-        write_summary("No video in the queue; nothing uploaded.")
+        msg = f"No video in queue - nothing to upload today."
+        print(msg)
+        write_summary(msg)
         return 0
 
     sidecar = video.with_suffix(".json")
@@ -145,12 +146,9 @@ def run() -> int:
         history = load_json(HISTORY_FILE, [])
         topic = next_unused_topic(niche_key, niche_info, history)
         if topic is None:
-            print(
-                f"ERROR: every sub-topic for '{niche_key}' has been used and "
-                f"{video.name} has no sidecar JSON with a title. Add new sub-topics to "
-                "niche_database.json or supply a title in the sidecar file.",
-                file=sys.stderr,
-            )
+            err_msg = f"ERROR: every sub-topic for '{niche_key}' has been used and {video.name} has no sidecar JSON."
+            print(err_msg, file=sys.stderr)
+            send_telegram_update(f"⚠️ YouTube Agent Error:\n{err_msg}")
             return 1
         meta = {**default_metadata(topic, niche_key, niche_info), **meta}
 
@@ -174,7 +172,6 @@ def run() -> int:
 
     try:
         youtube = get_service()
-        # Channel ID directly hardcoded to avoid any environment variable issues
         verify_channel(youtube, "UCaN934iC6nkbfDkG_X9TrRQ")
         video_id = upload_video(
             youtube,
@@ -189,8 +186,10 @@ def run() -> int:
             thumbnail_path=thumb_path,
         )
     except UploadError as exc:
+        err_msg = f"Upload failed: {exc}"
         print(f"ERROR: {exc}", file=sys.stderr)
-        write_summary(f"Upload failed: {exc}")
+        write_summary(err_msg)
+        send_telegram_update(f"❌ YouTube Upload Failed:\n{exc}")
         return 1
 
     record_history(
@@ -203,7 +202,10 @@ def run() -> int:
         }
     )
     archive(video, sidecar)
-    write_summary(f"Uploaded https://www.youtube.com/watch?v={video_id} ({privacy})")
+    
+    success_msg = f"🚀 Successfully Uploaded to YouTube!\n\n📌 Title: {meta['title']}\n🔗 Link: https://www.youtube.com/watch?v={video_id}\n🔒 Privacy: {privacy}"
+    write_summary(success_msg)
+    send_telegram_update(success_msg)
     return 0
 
 
