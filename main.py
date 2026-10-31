@@ -17,13 +17,13 @@ the queue folder. Optional sidecar: same name with .json, for example
          "topic": "Bedtime moral stories for toddlers", "thumbnail": "thumb.jpg"}
 
 Environment variables (secrets are read by upload.py):
-    NICHE_KEY         default: kids_cartoons
-    UPLOAD_PRIVACY    private (default) | unlisted | public
-    AI_DISCLOSURE     true (default) | false | omit
-    MADE_FOR_KIDS     true | false   (default: true for kids_cartoons, else false)
-    VIDEO_QUEUE_DIR   default: videos/queue
-    VIDEO_DONE_DIR    default: videos/uploaded
-    DRY_RUN           1 = show what would happen, upload nothing
+    NICHE_KEY          default: kids_cartoons
+    UPLOAD_PRIVACY     private (default) | unlisted | public
+    AI_DISCLOSURE      true (default) | false | omit
+    MADE_FOR_KIDS      true | false    (default: true for kids_cartoons, else false)
+    VIDEO_QUEUE_DIR    default: videos/queue
+    VIDEO_DONE_DIR     default: videos/uploaded
+    DRY_RUN            1 = show what would happen, upload nothing
 
 Exit codes: 0 = uploaded or nothing to do, 1 = error that needs attention.
 """
