@@ -1,13 +1,32 @@
 import os
 import json
 import random
+import requests
 from PIL import Image, ImageDraw, ImageFont
 from google import genai
 
+def send_telegram_alert(message):
+    token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID")
+    if token and chat_id:
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        payload = {"chat_id": chat_id, "text": message}
+        try:
+            requests.post(url, json=payload)
+        except Exception as e:
+            print(f"Telegram notification failed: {e}")
+
 def generate_video_and_assets():
-    os.makedirs("videos/queue", exist_ok=True)
+    queue_dir = "videos/queue"
+    os.makedirs(queue_dir, exist_ok=True)
     
-    # Initialize Gemini Client using environment variable
+    # 1. Buffer Check: Maintain 2-3 days video buffer in queue
+    existing_videos = [f for f in os.listdir(queue_dir) if f.endswith(".mp4")]
+    if len(existing_videos) >= 3:
+        print(f"Queue is already buffered ({len(existing_videos)} videos ready). Skipping generation.")
+        return
+
+    # 2. Initialize Gemini Client using environment variable
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
         raise ValueError("GEMINI_API_KEY environment variable is missing!")
@@ -30,6 +49,7 @@ def generate_video_and_assets():
         clean_text = response.text.strip().replace("```json", "").replace("```", "").strip()
         selected = json.loads(clean_text)
     except Exception as e:
+    # Fallback default topic if generation fails
         print(f"Gemini API generation failed, falling back to default topic: {e}")
         selected = {
             "title": "The Magic Starry Night Adventure",
@@ -41,29 +61,29 @@ def generate_video_and_assets():
     
     base_name = f"video_{random.randint(1000, 9999)}"
     
-    video_path = f"videos/queue/{base_name}.mp4"
-    thumb_path = f"videos/queue/{base_name}_thumb.jpg"
-    json_path = f"videos/queue/{base_name}.json"
+    video_path = f"{queue_dir}/{base_name}.mp4"
+    thumb_path = f"{queue_dir}/{base_name}_thumb.jpg"
+    json_path = f"{queue_dir}/{base_name}.json"
     
-    # 1. Create a dummy blank video file using touch/write for structure simulation
+    # 3. Create a dummy blank video file using structure simulation
     with open(video_path, "wb") as f:
-        f.write(b"\x00" * 1024) # Placeholder bytes for media container
+        f.write(b"\x00" * 2048)
         
-    # 2. Create thumbnail image using Pillow
+    # 4. Create thumbnail image with human-touch watermark using Pillow
     img = Image.new('RGB', (1280, 720), color=(73, 109, 137))
     d = ImageDraw.Draw(img)
     
-    # Draw text safely on thumbnail (handling long titles)
     title_text = selected.get("title", "Kids Story")
-    d.text((80, 300), title_text[:40], fill=(255, 255, 0))
+    d.text((80, 280), title_text[:40], fill=(255, 255, 0))
+    d.text((80, 620), "© Tiny Wonders | Automated Agent", fill=(200, 200, 200))
     img.save(thumb_path)
     
-    # 3. Create Sidecar JSON metadata matching main.py requirements
+    # 5. Create Sidecar JSON metadata matching main.py requirements
     metadata = {
         "title": f"{selected.get('title')} | Kids Stories",
         "description": selected.get("description", "Enjoy this amazing animated story."),
         "tags": selected.get("tags", ["kids stories", "animation"]),
-        "category_id": "24", # Entertainment
+        "category_id": "24",
         "topic_id": selected.get("topic_id", "gen_001"),
         "made_for_kids": True,
         "chapters": [
@@ -76,7 +96,9 @@ def generate_video_and_assets():
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=4)
         
-    print(f"Successfully generated queue assets via Gemini for: {selected.get('title')}")
+    success_msg = f"🤖 Gemini Agent generated queue asset:\nTitle: {selected.get('title')}"
+    print(success_msg)
+    send_telegram_alert(success_msg)
 
 if __name__ == "__main__":
     generate_video_and_assets()
