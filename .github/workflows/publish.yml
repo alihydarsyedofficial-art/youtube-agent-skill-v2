@@ -1,0 +1,25 @@
+name: YouTube Auto Publish Checker
+
+on:
+  schedule:
+    - cron: '30 13 * * *'
+  workflow_dispatch:
+
+jobs:
+  publish-checker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Run Publish Check
+        env:
+          AUTO_PUBLISH: ${{ secrets.AUTO_PUBLISH }}
+        run: |
+          python publish.py
