@@ -1,0 +1,27 @@
+{
+    "title": "The Magic Starry Night Adventure | Kids Stories",
+    "description": "Enjoy this amazing animated bedtime story designed specially for kids and toddlers.",
+    "tags": [
+        "bedtime stories",
+        "kids animation",
+        "cartoon for kids",
+        "bedtime_stories"
+    ],
+    "category_id": "24",
+    "topic_id": "bed_002",
+    "made_for_kids": true,
+    "chapters": [
+        {
+            "title": "Start",
+            "time": "00:00"
+        },
+        {
+            "title": "The Journey",
+            "time": "00:15"
+        },
+        {
+            "title": "Happy Ending",
+            "time": "00:45"
+        }
+    ]
+}
